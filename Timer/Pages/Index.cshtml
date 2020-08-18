@@ -1,0 +1,47 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div>
+    <h1 id="date"></h1>
+    <h2 id="time"></h2>
+    <h3 id="name"></h3>
+</div>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/timer").build();
+    connection.on("ReceiveMessage", function (year, month, day, hour, minute, second) {
+        document.getElementById("date").innerHTML = year + "/" + month + "/" + day;
+        document.getElementById("time").innerHTML = hour + ":" + minute + ":" + second;
+        console.log("hi");
+    });
+
+
+    connection.start().then(function () {
+        document.getElementById("sendButton").disabled = false;
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    window.onload = (event) => {
+        connection.invoke("SendMessage").catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    };
+
+    setTimeout(window.onload = function () {
+        connection.invoke("SendMessage").catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    }, 1000);
+
+</script>
